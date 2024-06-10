@@ -1,0 +1,118 @@
+{% extends 'layouts/master_ruangan.html' %} {% block content %}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class="col-xl-12">
+    <!-- HTML5 Inputs -->
+    <div class="card-header">
+      <h2 class="text-uppercase">Form Pengusulan Barang</h2>
+    </div>
+    <div class="col-xl">
+      <div class="card mb-4">
+        <div class="card-body">
+          <form>
+            <div class="mb-3">
+              <label class="form-label" for="basic-default-fullname">Tanggal</label>
+              <input type="text-input" class="form-control" id="basic-default-fullname"/>
+            </div>
+            <div class="row align-items-center">
+              <div class="col">
+                <div class="mb-3">
+                  <label class="form-label" for="basic-default-company">Nama Barang</label>
+                  <input type="text" class="form-control" id="basic-default-company" />
+                </div>
+              </div>
+              <div class="col">
+                <div class="mb-3">
+                  <label class="form-label" for="basic-default-company">Volume</label>
+                  <input type="text" class="form-control" id="basic-default-company" />
+                </div>
+              </div>
+              <div class="col">
+                <div class="mb-3">
+                  <label class="form-label" for="basic-default-company">Type/Merk</label>
+                  <input type="text" class="form-control" id="basic-default-company" />
+                </div>
+              </div>
+              <div class="col-1 mt-3 me-4">
+                <button type="submit" class="d-flex align-items-center btn text-white" style="background-color:#9CBEE4;">
+                  <i class="bx bx-plus"></i>
+                  Tambah</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="card-body table-responsive text-nowrap">
+          <table id="pengajuan-barang"
+          class="display"
+          style="width: 100%">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nama Barang</th>
+                <th>Volume</th>
+                <th class="text-center">Type/Merk</th>
+                <th class="text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+              <tr>
+                <td>1</td>
+                <td>TV</td>
+                <td>1</td>
+                <td class="text-center">Polytron</td>
+                <td class="text-center">
+                  <button type="button" class="btn btn-warning rounded-pill" data-bs-toggle="modal" data-bs-target="#editPengajuanBarang">
+                    <i class="bx bx-edit"></i>
+                  </button>
+                  <button type="button" class="btn btn-danger rounded-pill" data-bs-toggle="modal" data-bs-target="#deleteModalPengajuan">
+                    <i class="bx bx-trash"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>AC</td>
+                <td>1</td>
+                <td class="text-center">Sharp</td>
+                <td class="text-center">
+                  <button type="button" class="btn btn-warning rounded-pill" data-bs-toggle="modal" data-bs-target="#editPengajuanBarang">
+                    <i class="bx bx-edit"></i>
+                  </button>
+                  <button type="button" class="btn btn-danger rounded-pill" data-bs-toggle="modal" data-bs-target="#deleteModalPengajuan">
+                    <i class="bx bx-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="col float-end" style="margin-top: 150px;">
+            <button type="button" class="btn btn-danger rounded" data-bs-toggle="modal" >
+              Hapus
+            </button>
+            <button type="button" class="btn rounded text-white" data-bs-toggle="modal" style="background-color: #9CBEE4;">
+              Simpan
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="row justify-content-center">
+    <div class="col-12 card">
+      
+    </div>
+  </div> -->
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    $('#pengajuan-barang').DataTable( {
+        "paging":   false,
+        "ordering": false,
+        "info":     false
+    } );
+} );</script>
+{% endblock %}

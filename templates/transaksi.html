@@ -1,0 +1,130 @@
+{% extends 'layouts/master_ruangan.html' %}
+
+{% block content %}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row justify-content-center">
+        <div class="col-12 card">
+            <div class="card-header">
+                <h3>Riwayat Transaksi</h3>
+            </div>
+            <div class="card-body">
+                <form class="row justify-content-center mb-2">
+                    <div class="mb-4 col-md-6">
+                        <div class="form-group row">
+                            <label for="tglstart" class="col-sm-3 col-form-label">Tanggal Mulai</label>
+                            <div class="col-sm-9">
+                                <input type="date" class="form-control" id="tglstart">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4 col-md-6">
+                        <div class="form-group row">
+                            <label for="tglend" class="col-sm-3 col-form-label">Tanggal Selesai</label>
+                            <div class="col-sm-9">
+                                <input type="date" class="form-control" id="tglend">
+                            </div>
+                        </div>
+                    </div>
+                            <div class="mb-4 col-md-12">
+                                <div class="form-group row">
+                                    <label for="status" class="col-sm-2 col-form-label text-center">Jenis Transaksi</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control" id="status">
+                                            <option value="proses">Pengajuan</option>
+                                            <option value="selesai">Pengusulan</option>
+                                        </select>
+                                    </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="table-responsive">
+                    <table class="table" id="tblstatus" style="overflow-x: auto !important; width: 100%;">
+                        <thead class="text-center">
+                            <tr>
+                                <th>No.</th>
+                                <th>Tanggal</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>23 Februari 2024</td>
+                                <td>
+                                    <button class="btn btn-sm btn-success rounded-3">Selesai</button>
+                                </td>
+                                
+                                <td>
+                                    <a href="{{ url_for('detail_transaksi') }}" class="btn btn-primary rounded-pill">Detail</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>20 Februari 2024</td>
+                                <td>
+                                    <button class="btn btn-sm btn-success rounded-3">Selesai</button>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('detail_transaksi') }}" class="btn btn-primary rounded-pill">Detail</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>28 Februari 2024</td>
+                                <td>
+                                    <button class="btn btn-sm btn-success rounded-3">Selesai</button>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('detail_transaksi') }}" class="btn btn-primary rounded-pill">Detail</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>1 Maret 2024</td>
+                                <td>
+                                    <button class="btn btn-sm btn-success rounded-3">Selesai</button>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('detail_transaksi') }}" class="btn btn-primary rounded-pill">Detail</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>20 Maret 2024</td>
+                                <td>
+                                    <button class="btn btn-sm btn-success rounded-3">Selesai</button>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('detail_transaksi') }}" class="btn btn-primary rounded-pill">Detail</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        $('#tblstatus').DataTable({
+            searching: false,
+            paging: true,
+            lengthChange: true,
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            language: {
+                paginate: {
+                    previous: "Previous",
+                    next: "Next"
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'layouts/master_verifikasi.html' %} {% block content %}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class="col-xl-12">
+    <!-- HTML5 Inputs -->
+    <div class="card-header">
+      <h2 class="text-uppercase">Detail Verifikasi Pengusulan Barang</h2>
+    </div>
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="mb-3 row">
+          <label for="text-input" class="col-md-2 col-form-label">Ruang</label>
+          <div class="col-md-10">
+            <input class="form-control" type="text" id="text-input"/>
+          </div>
+        </div>
+        <div class="mb-3 row">
+          <label for="text-input" class="col-md-2 col-form-label">Tanggal Pengajuan</label>
+          <div class="col-md-10">
+            <input class="form-control" type="text" id="text-input" />
+          </div>
+        </div>
+        <div class="mb-3 row">
+          <label for="text-input" class="col-md-2 col-form-label">Tanggal Penerimaan</label>
+          <div class="col-md-10">
+            <input class="form-control" type="text" id="text-input" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-12 card">
+      <div class="card-body table-responsive text-nowrap">
+        <table class="table" style="width: 100%">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Nama Barang</th>
+              <th>Volume</th>
+              <th>Type/Merk</th>
+              <th>Status</th>
+              <th>Keterangan</th>
+            </tr>
+          </thead>
+          <tbody class="table-border-bottom-0">
+            <tr>
+              <td>1</td>
+              <td>TV</td>
+              <td>1</td>
+              <td>Polytron</td>
+              <td>
+                <button type="button" class="btn btn-danger rounded-pill" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                  ✖️
+                </button>
+                <button type="button" class="btn btn-success rounded-pill" data-bs-toggle="modal" data-bs-target="#accModal">
+                  ✔️
+                </button>
+              </td>
+              <td>Diterima (1)</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>AC</td>
+              <td>2</td>
+              <td>Panasonic</td>
+              <td>
+                <button type="button" class="btn btn-danger rounded-pill" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                  ✖️
+                </button>
+                <button type="button" class="btn btn-success rounded-pill" data-bs-toggle="modal" data-bs-target="#accModal">
+                  ✔️
+                </button>
+              </td>
+              <td>Diterima (2)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
