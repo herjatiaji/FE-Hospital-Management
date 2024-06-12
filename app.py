@@ -10,9 +10,55 @@ from flask import (
 )
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key_here'
+
+import json
+import requests
+
+@app.route("/handle_login", methods=["POST"])
+def handle_login():
+    username = request.form.get("username")
+    password = request.form.get("password")
+    login_data = {"username": username, "password": password}
+    
+    print("JSON data:", json.dumps(login_data, indent=4))
+    
+    api_url = "http://127.0.0.1:1330/auth/login"
+    response = requests.post(api_url, json=login_data)
+    
+    if response.status_code == 200:
+        session['username'] = username
+        login_response = response.json()
+        role = login_response.get('role', None)
+        session['role']= role
+        
+        if role == 'Staff Ruangan':
+            session['username'] = username
+            return redirect('/staff_ruangan') 
+        elif role == 'kepala_bidang':
+            session['username'] = username
+            return redirect('/kepala_bidang')
+        elif role == 'Verifikasi':
+            session['username'] = username
+            return redirect('/verifikasi')
+        elif role == 'Staff Gudang':
+            session['username'] = username
+            return redirect('/staff_gudang')
+        
+        else:
+            flash("Invalid role for dashboard access.", "error")
+            return redirect(url_for('login'))
+    else:
+        flash("Login failed. Please check your username and password.", "error")
+        return redirect(url_for('login'))
+
+@app.route("/dashboard")
+def dashboard():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template("dashboard-staff.html", username=session['username'])
 
 
-# Index Route
 @app.route("/login", methods=["GET"])
 def login():
     return render_template("login.html")
@@ -319,11 +365,70 @@ def detail_transaksi():
     return render_template("/pages/staff_ruangan/detail_transaksiRuangan.html")
 
 
+import requests
+
 @app.route("/staff_ruangan/pengajuan")
 def pengajuanBarang():
-    return render_template(
-        "/pages/staff_ruangan/pengajuan-barang.html", menu="pengajuan-barang"
-    )
+    if request.method == "POST":
+        if request.form.get('_method') == 'DELETE':
+            return delete_pengajuan_barang(request.form.get('id'))
+    api_url = "http://127.0.0.1:1330/staff_ruangan/pengajuan_barang"
+    response = requests.get(api_url)
+    data = response.json()
+
+   
+    pengajuan_barang = data.get('pengajuan_barang', [])
+
+  
+    return render_template("/pages/staff_ruangan/pengajuan-barang.html", menu="pengajuan-barang", pengajuan_barang=pengajuan_barang)
+
+@app.route("/staff_ruangan/pengajuan", methods=["POST"])
+def sendPengajuanBarang():
+    role = session.get('role')
+    if request.method == "POST":
+        tanggal = request.form.get('tanggal')
+        nama_barang = request.form.get('nama_barang')
+        jumlah = request.form.get('jumlah')
+        ruangan = request.form.get('ruangan')
+
+        data = {
+            "role": role,
+            "tanggal": tanggal,
+            "nama_barang": nama_barang,
+            "jumlah": jumlah,
+            "ruangan": ruangan
+        }
+
+        
+        api_url = "http://127.0.0.1:1330/staff_ruangan/pengajuan_barang"
+        response = requests.post(api_url, json=data)
+        print("JSON data:", json.dumps(data, indent=4))
+
+        if response.status_code == 200:
+            flash("Pengajuan barang berhasil diajukan.", "success")
+        else:
+            flash("Terjadi kesalahan saat mengajukan barang.", "error")
+
+        return redirect(url_for('pengajuanBarang'))
+    
+@app.route("/staff_ruangan/pengajuan_barang/<string:item_id>", methods=["DELETE"])
+def delete_pengajuan_barang(item_id):
+    api_url = f"http://127.0.0.1:1330/staff_ruangan/pengajuan_barang/{item_id}"
+    response = requests.delete(api_url)
+    if response.status_code == 200:
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "error": response.text}), response.status_code
+
+@app.route("/staff_ruangan/pengajuan_barang/<string:item_id>", methods=["PUT"])
+def update_pengajuan_barang(item_id):
+    data = request.get_json()
+    api_url = f"http://127.0.0.1:1330/staff_ruangan/pengajuan_barang/{item_id}"
+    response = requests.put(api_url, json=data)
+    if response.status_code == 200:
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "error": response.text}), response.status_code
 
 
 @app.route("/staff_ruangan/pengusulan")

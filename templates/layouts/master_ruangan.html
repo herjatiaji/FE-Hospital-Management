@@ -303,21 +303,24 @@
                       aria-label="Close"
                     ></button>
                   </div>
-                  <div class="modal-body">
+                  <div class="modal-body" >
+                    <form id="editFormPengajuan">
                     <div class="col mb-3">
-                      <label for="nameBasic" class="form-label">Nama Barang</label>
-                      <input type="text" id="nameBasic" class="form-control" placeholder="" />
+                      <label for="editName" class="form-label">Nama Barang</label>
+                      <input type="text" id="editName" class="form-control" name="name" placeholder="Nama Barang" required />
                     </div>
                     <div class="col mb-3">
-                      <label for="nameBasic" class="form-label">Jumlah Barang</label>
-                      <input type="text" id="nameBasic" class="form-control" placeholder="" />
+                      <label for="editQuantity" class="form-label">Jumlah Barang</label>
+                      <input type="number" id="editQuantity" class="form-control" name="quantity" placeholder="Jumlah Barang" required />
                     </div>
+                    <input type="hidden" id="editItemId" name="item_id" />
+                  </form>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" style="outline: #9CBEE4;" data-bs-dismiss="modal">
                       Close
                     </button>
-                    <button type="button" class="btn" style="background-color: #9CBEE4;color: white;">Save</button>
+                    <button type="submit" form="editFormPengajuan" class="btn btn-primary" style="background-color: #9CBEE4;color: white;">Save</button>
                   </div>
                 </div>
               </div>
@@ -348,7 +351,7 @@
                     <button type="button" class="btn btn-outline-secondary" style="outline: #9CBEE4;" data-bs-dismiss="modal">
                       Close
                     </button>
-                    <button type="button" class="btn btn-danger">Delete</button>
+                    <button type="button" class="btn btn-danger"id="confirmDelete">Delete</button>
                   </div>
                 </div>
               </div>
@@ -400,11 +403,93 @@
 
     <!-- Page JS -->
     <script src="/static/assets/js/dashboards-analytics.js"></script>
+    <!-- <script -->
 
     
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <script src="https://cdn.datatables.net/2.0.7/js/dataTables.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const deleteModal = document.getElementById('deleteModalPengajuan');
+        let itemId;
+    
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+          const button = event.relatedTarget;
+          itemId = button.getAttribute('data-id');
+        });
+    
+        document.getElementById('confirmDelete').addEventListener('click', function () {
+          fetch(`/staff_ruangan/pengajuan_barang/${itemId}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              location.reload(); 
+            } else {
+              alert('Failed to delete item: ' + data.error);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the item');
+          });
+        });
+      });
+    </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const editModal = document.getElementById('editPengajuanBarang');
+    
+        editModal.addEventListener('show.bs.modal', function (event) {
+          const button = event.relatedTarget;
+          const itemId = button.getAttribute('data-id');
+          const itemName = button.getAttribute('data-name');
+          const itemQuantity = button.getAttribute('data-quantity');
+    
+          document.getElementById('editName').value = itemName;
+          document.getElementById('editQuantity').value = itemQuantity;
+          document.getElementById('editItemId').value = itemId;
+        });
+    
+        document.getElementById('editFormPengajuan').addEventListener('submit', function (event) {
+          event.preventDefault();
+    
+          const itemId = document.getElementById('editItemId').value;
+          const itemName = document.getElementById('editName').value;
+          const itemQuantity = document.getElementById('editQuantity').value;
+    
+          fetch(`/staff_ruangan/pengajuan_barang/${itemId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              nama_barang: itemName,
+              jumlah: itemQuantity,
+            }),
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              location.reload(); 
+            } else {
+              alert('Failed to update item: ' + data.error);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating the item');
+          });
+        });
+      });
+    </script>
+    
+    
     {% block scripts %}
     {% endblock %}
   </body>
