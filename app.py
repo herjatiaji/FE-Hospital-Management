@@ -44,9 +44,9 @@ def handle_login():
         elif role == 'Staff Gudang':
             session['username'] = username
             return redirect('/staff_gudang')
-        elif role  == 'Sub Bagian':
+        elif role  == 'sub_bagian':
             session['username'] = username
-            return redirect()
+            return redirect('/sub_bag')
         
         else:
             flash("Invalid role for dashboard access.", "error")
@@ -396,7 +396,7 @@ def sendPengajuanBarang():
 
         data = {
             "role": role,
-            "tanggal": tanggal,
+            "tanggal_pengajuan": tanggal,
             "nama_barang": nama_barang,
             "jumlah": jumlah,
             "ruangan": ruangan
@@ -445,7 +445,8 @@ def pengusulanBarang():
     print(data)
 
    
-    pengusulan_barang = data.get('pengajuan_barang', [])
+    pengusulan_barang = data.get('pengusulan_barang', [])
+    print(pengusulan_barang)
 
   
     return render_template("/pages/staff_ruangan/pengusulan_barang.html", menu="pengusulan_barang", pengusulan_barang=pengusulan_barang)
@@ -462,7 +463,7 @@ def sendPengusulanBarang():
 
         data = {
             "role": role,
-            "tanggal": tanggal,
+            "tanggal_pengusulan": tanggal,
             "nama_barang": nama_barang,
             "volume": jumlah,
             "ruangan": ruangan,
