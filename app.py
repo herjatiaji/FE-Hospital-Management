@@ -44,6 +44,9 @@ def handle_login():
         elif role == 'Staff Gudang':
             session['username'] = username
             return redirect('/staff_gudang')
+        elif role  == 'Sub Bagian':
+            session['username'] = username
+            return redirect()
         
         else:
             flash("Invalid role for dashboard access.", "error")
@@ -433,9 +436,69 @@ def update_pengajuan_barang(item_id):
 
 @app.route("/staff_ruangan/pengusulan")
 def pengusulanBarang():
-    return render_template(
-        "/pages/staff_ruangan/pengusulan_barang.html", menu="pengusulan-barang"
-    )
+    if request.method == "POST":
+        if request.form.get('_method') == 'DELETE':
+            return delete_pengajuan_barang(request.form.get('id'))
+    api_url = "http://127.0.0.1:1330/staff_ruangan/pengusulan_barang"
+    response = requests.get(api_url)
+    data = response.json()
+    print(data)
+
+   
+    pengusulan_barang = data.get('pengajuan_barang', [])
+
+  
+    return render_template("/pages/staff_ruangan/pengusulan_barang.html", menu="pengusulan_barang", pengusulan_barang=pengusulan_barang)
+
+@app.route("/staff_ruangan/pengusulan", methods=["POST"])
+def sendPengusulanBarang():
+    role = session.get('role')
+    if request.method == "POST":
+        tanggal = request.form.get('tanggal')
+        nama_barang = request.form.get('nama_barang')
+        jumlah = request.form.get('jumlah')
+        ruangan = request.form.get('ruangan')
+        merek = request.form.get('merek')
+
+        data = {
+            "role": role,
+            "tanggal": tanggal,
+            "nama_barang": nama_barang,
+            "volume": jumlah,
+            "ruangan": ruangan,
+            "merek": merek
+        }
+
+        
+        api_url = "http://127.0.0.1:1330/staff_ruangan/pengusulan_barang"
+        response = requests.post(api_url, json=data)
+        print("JSON data:", json.dumps(data, indent=4))
+
+        if response.status_code == 200:
+            flash("Pengajuan barang berhasil diajukan.", "success")
+        else:
+            flash("Terjadi kesalahan saat mengajukan barang.", "error")
+
+        return redirect(url_for('pengusulanBarang'))
+    
+@app.route("/staff_ruangan/pengusulan_barang/<string:item_id>", methods=["DELETE"])
+def delete_pengusulan_barang(item_id):
+    api_url = f"http://127.0.0.1:1330/staff_ruangan/pengusulan_barang/{item_id}"
+    response = requests.delete(api_url)
+    if response.status_code == 200:
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "error": response.text}), response.status_code
+    
+@app.route("/staff_ruangan/pengusulan_barang/<string:item_id>", methods=["PUT"])
+def update_pengusulan_barang(item_id):
+    data = request.get_json()
+    api_url = f"http://127.0.0.1:1330/staff_ruangan/pengusulan_barang/{item_id}"
+    response = requests.put(api_url, json=data)
+    if response.status_code == 200:
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "error": response.text}), response.status_code
 
 
 if __name__ == "__main__":

@@ -357,6 +357,8 @@
               </div>
             </div>
             <!-- Modal Pengajuan -->
+
+
             <!-- Footer -->
             <footer class="content-footer footer bg-footer-theme">
               <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
@@ -410,85 +412,109 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <script src="https://cdn.datatables.net/2.0.7/js/dataTables.js"></script>
     <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        const deleteModal = document.getElementById('deleteModalPengajuan');
-        let itemId;
-    
-        deleteModal.addEventListener('show.bs.modal', function (event) {
-          const button = event.relatedTarget;
-          itemId = button.getAttribute('data-id');
-        });
-    
-        document.getElementById('confirmDelete').addEventListener('click', function () {
-          fetch(`/staff_ruangan/pengajuan_barang/${itemId}`, {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              location.reload(); 
-            } else {
-              alert('Failed to delete item: ' + data.error);
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while deleting the item');
-          });
-        });
-      });
+      $(document).ready(function() {
+    $('#pengusulan-barang').DataTable({
+        "paging": false,
+        "ordering": false,
+        "info": false
+    });
+});
+
     </script>
     <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        const editModal = document.getElementById('editPengajuanBarang');
-    
-        editModal.addEventListener('show.bs.modal', function (event) {
-          const button = event.relatedTarget;
-          const itemId = button.getAttribute('data-id');
-          const itemName = button.getAttribute('data-name');
-          const itemQuantity = button.getAttribute('data-quantity');
-    
-          document.getElementById('editName').value = itemName;
-          document.getElementById('editQuantity').value = itemQuantity;
-          document.getElementById('editItemId').value = itemId;
-        });
-    
-        document.getElementById('editFormPengajuan').addEventListener('submit', function (event) {
-          event.preventDefault();
-    
-          const itemId = document.getElementById('editItemId').value;
-          const itemName = document.getElementById('editName').value;
-          const itemQuantity = document.getElementById('editQuantity').value;
-    
-          fetch(`/staff_ruangan/pengajuan_barang/${itemId}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              nama_barang: itemName,
-              jumlah: itemQuantity,
-            }),
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              location.reload(); 
-            } else {
-              alert('Failed to update item: ' + data.error);
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while updating the item');
-          });
-        });
-      });
-    </script>
-    
+     
+     
+     document.addEventListener('DOMContentLoaded', function () {
+  // Variables for the modals and context
+  const deleteModal = document.getElementById('deleteModalPengajuan');
+  const editModal = document.getElementById('editPengajuanBarang');
+  let itemId, isPengusulan;
+
+  // Event listener for showing the delete modal
+  deleteModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    itemId = button.getAttribute('data-id');
+    isPengusulan = button.getAttribute('data-is-pengusulan') === 'true';
+  });
+
+  // Event listener for confirming deletion
+  document.getElementById('confirmDelete').addEventListener('click', function () {
+    const route = isPengusulan ? 'pengusulan_barang' : 'pengajuan_barang';
+    fetch(`/staff_ruangan/${route}/${itemId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        location.reload();
+      } else {
+        alert('Failed to delete item: ' + data.error);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while deleting the item');
+    });
+  });
+
+  // Event listener for showing the edit modal
+  editModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    itemId = button.getAttribute('data-id');
+    const itemName = button.getAttribute('data-name');
+    const itemQuantity = button.getAttribute('data-quantity');
+    isPengusulan = button.getAttribute('data-is-pengusulan') === 'true';
+
+    document.getElementById('editName').value = itemName;
+    document.getElementById('editQuantity').value = itemQuantity;
+    document.getElementById('editItemId').value = itemId;
+  });
+
+  // Event listener for submitting the edit form
+  document.getElementById('editFormPengajuan').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const itemId = document.getElementById('editItemId').value;
+    const itemName = document.getElementById('editName').value;
+    const itemQuantity = document.getElementById('editQuantity').value;
+    const route = isPengusulan ? 'pengusulan_barang' : 'pengajuan_barang';
+    const bodyData = {
+      nama_barang: itemName,
+    };
+
+    if (isPengusulan) {
+      bodyData.volume = itemQuantity;
+    } else {
+      bodyData.jumlah = itemQuantity;
+    }
+
+    fetch(`/staff_ruangan/${route}/${itemId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(bodyData),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        location.reload();
+      } else {
+        alert('Failed to update item: ' + data.error);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while updating the item');
+    });
+  });
+});
+
+      </script>
+      
     
     {% block scripts %}
     {% endblock %}
