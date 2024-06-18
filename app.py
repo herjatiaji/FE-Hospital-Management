@@ -138,37 +138,46 @@ def dashboard_verifikasi():
 
 @app.route("/verifikasi/verif")
 def verifikasiverif():
-    data = [
-        {
-            "no": 1,
-            "tanggal": "23/02/2023",
-            "ruangan": "Ruangan A",
-        },
-        {
-            "no": 2,
-            "tanggal": "25/02/2023",
-            "ruangan": "Ruangan B",
-        },
-        {
-            "no": 3,
-            "tanggal": "27/02/2023",
-            "ruangan": "Ruangan C",
-        },
-        {
-            "no": 4,
-            "tanggal": "29/02/2023",
-            "ruangan": "Ruangan D",
-        },
-    ]
+    if request.method == "POST":
+        if request.form.get('_method') == 'DELETE':
+            return delete_pengusulan_barang(request.form.get('id'))
+
+    api_url = "http://127.0.0.1:1330/verifikasi/ajukan"
+    response = requests.get(api_url)
+    data = response.json()
+
+
+    verifikasi = data.get('verifikasi', [])
+
+    processed_data = []
+    for i, item in enumerate(verifikasi):
+        processed_data.append({
+            "no": i + 1,
+            "tanggal": item["tanggal_pengusulan"],
+            "ruangan": item["ruangan"],  
+            "id": item["_id"],
+            "is_verif": item["is_verif"],
+            "jumlah_diterima": item["jumlah_diterima"],
+            "merek": item["merek"],
+            "nama_barang": item["nama_barang"],
+            "tanggal_penerimaan": item["tanggal_penerimaan"],
+            "volume": item["volume"]
+        })
+
+    print("DATA DATA VERIFIKASI:>>>>>>>>>>>>>>>")
+    print(processed_data)
     return render_template(
-        "/pages/verifikasi/verifikasi-verifikasi.html", data=data, menu="verifikasi4"
+        "/pages/verifikasi/verifikasi-verifikasi.html", data=processed_data, menu="verifikasi4"
     )
 
 
-@app.route("/verifikasi/verif/detail")
-def verifikasiDetailVerifikasi():
+@app.route("/verifikasi/verif/detail/<item_id>")
+def verifikasiDetailVerifikasi(item_id):
+    api_url = f"http://127.0.0.1:1330/verifikasi/ajukan/{item_id}"
+    response = requests.get(api_url)
+    item_detail = response.json()
     return render_template(
-        "/pages/verifikasi/verifikasi-detail-verifikasi.html", menu="verifikasi4"
+        "/pages/verifikasi/verifikasi-detail-verifikasi.html", menu="verifikasi4", item_detail=item_detail
     )
 
 
@@ -182,41 +191,51 @@ def dashboard_kepalaBidang():
     )
 
 
-@app.route("/kepala_bidang/verif")
+@app.route("/kepala_bidang/verif",methods=['GET', 'POST'])
 def verifikasiKepalaBidang():
-    data = [
-        {
-            "no": 1,
-            "tanggal": "23/02/2023",
-            "ruangan": "Ruangan A",
-        },
-        {
-            "no": 2,
-            "tanggal": "25/02/2023",
-            "ruangan": "Ruangan B",
-        },
-        {
-            "no": 3,
-            "tanggal": "27/02/2023",
-            "ruangan": "Ruangan C",
-        },
-        {
-            "no": 4,
-            "tanggal": "29/02/2023",
-            "ruangan": "Ruangan D",
-        },
-    ]
+    if request.method == "POST":
+        if request.form.get('_method') == 'DELETE':
+            return delete_pengusulan_barang(request.form.get('id'))
+
+    # Fetch data from the API
+    api_url = "http://127.0.0.1:1330/kepala_bagian/ajukan"
+    response = requests.get(api_url)
+    data = response.json()
+
+    # Extract the sub_bag data
+    kepala_bagian = data.get('kepala_bagian', [])
+
+    # Process data if necessary (e.g., adding additional fields)
+    processed_data = []
+    for i, item in enumerate(kepala_bagian):
+        processed_data.append({
+            "no": i + 1,
+            "tanggal": item["tanggal_pengusulan"],
+            "ruangan": item["ruangan"],  # Adjust this according to your data
+            "id": item["_id"],
+            "is_verif": item["is_verif"],
+            "jumlah_diterima": item["jumlah_diterima"],
+            "merek": item["merek"],
+            "nama_barang": item["nama_barang"],
+            "tanggal_penerimaan": item["tanggal_penerimaan"],
+            "volume": item["volume"]
+        })
+    
     return render_template(
         "/pages/kepala_bidang/verifikasi-kepalaBidang.html",
-        data=data,
+        data=processed_data,
         menu="verifikasi5",
     )
 
 
-@app.route("/kepala_bidang/verif/detail")
-def verifikasiDetailkepalaBidang():
+@app.route("/kepala_bidang/verif/detail/<item_id>")
+def verifikasiDetailkepalaBidang(item_id):
+    api_url = f"http://127.0.0.1:1330/kepala_bagian/ajukan/{item_id}"
+    response = requests.get(api_url)
+    item_detail = response.json()
+    
     return render_template(
-        "/pages/kepala_bidang/verifikasi-detail-kepalaBidang.html", menu="verifikasi5"
+        "/pages/kepala_bidang/verifikasi-detail-kepalaBidang.html", menu="verifikasi5", item_detail=item_detail
     )
 
 
