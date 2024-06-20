@@ -350,35 +350,36 @@ def dashboardStaff():
 def stock():
     return render_template("/pages/staff_ruangan/stock.html")
 
-
 @app.route("/staff_ruangan/transaksi")
 def transaksi():
     api_url = "http://127.0.0.1:1330/api/transaksi"
     response = requests.get(api_url)
     data = response.json()
 
-    kepala_bagian_transaksi = data.get('kepala_bagian_transaksi', [])
-    sub_bag_transaksi = data.get('sub_bag_transaksi', [])
-    verifikasi_transaksi = data.get('verifikasi_transaksi', [])
-
-    all_transactions = kepala_bagian_transaksi + sub_bag_transaksi + verifikasi_transaksi
-
-    processed_data = []
-    for i, item in enumerate(all_transactions):
-        processed_data.append({
-            "no": i + 1,
-            "tanggal_pengusulan": item.get("tanggal_pengusulan"),
-            "status": "Selesai" if item.get("is_verif") else "Proses",
-            "ruangan": item.get("ruangan"),
-            "id": item.get("_id"),
-            "nama_barang": item.get("nama_barang"),
-            "jumlah_diterima": item.get("jumlah_diterima"),
-            "merek": item.get("merek"),
-            "tanggal_penerimaan": item.get("tanggal_penerimaan"),
-            "volume": item.get("volume")
+    transactions = []
+    # Add the logic to process your JSON data into the transactions list
+    for transaksi in data.get("kepala_bagian_transaksi", []):
+        transactions.append({
+            "no": transaksi["_id"],
+            "tanggal": transaksi["tanggal_pengusulan"],
+            "status": "Selesai" if transaksi["is_verif"] else "Proses",
+        })
+    for transaksi in data.get("sub_bag_transaksi", []):
+        transactions.append({
+            "no": transaksi["_id"],
+            "tanggal": transaksi["tanggal_pengusulan"],
+            "status": "Selesai" if transaksi["is_verif"] else "Proses",
+        })
+    for transaksi in data.get("verifikasi_transaksi", []):
+        transactions.append({
+            "no": transaksi["_id"],
+            "tanggal": transaksi["tanggal_pengusulan"],
+            "status": "Selesai" if transaksi["is_verif"] else "Proses",
         })
 
-    return render_template("/pages/staff_ruangan/transaksi.html", data=processed_data, menu="transaksi")
+    return render_template(
+        "/pages/staff_ruangan/transaksi.html", data=transactions, menu="transaksi"
+    )
 
 
 @app.route("/staff_ruangan/transaksi/detail")
