@@ -26,15 +26,15 @@
                             </div>
                         </div>
                     </div>
-                            <div class="mb-4 col-md-12">
-                                <div class="form-group row">
-                                    <label for="status" class="col-sm-2 col-form-label text-center">Jenis Transaksi</label>
-                                    <div class="col-sm-8">
-                                        <select class="form-control" id="status">
-                                            <option value="proses">Pengajuan</option>
-                                            <option value="selesai">Pengusulan</option>
-                                        </select>
-                                    </div>
+                    <div class="mb-4 col-md-12">
+                        <div class="form-group row">
+                            <label for="status" class="col-sm-2 col-form-label text-center">Jenis Transaksi</label>
+                            <div class="col-sm-8">
+                                <select class="form-control" id="status">
+                                    <option value="proses">Pengajuan</option>
+                                    <option value="selesai">Pengusulan</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -45,61 +45,28 @@
                                 <th>No.</th>
                                 <th>Tanggal</th>
                                 <th>Status</th>
+                                <th>Ruangan</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
+                            {% for item in data %}
                             <tr>
-                                <td>1.</td>
-                                <td>23 Februari 2024</td>
+                                <td>{{ item.no }}</td>
+                                <td>{{ item.tanggal_pengusulan }}</td>
                                 <td>
-                                    <button class="btn btn-sm btn-success rounded-3">Selesai</button>
+                                    {% if item.status == 'Selesai' %}
+                                    <button class="btn btn-sm btn-success rounded-3">{{ item.status }}</button>
+                                    {% else %}
+                                    <button class="btn btn-sm btn-warning rounded-3">{{ item.status }}</button>
+                                    {% endif %}
                                 </td>
-                                
+                                <td>{{ item.ruangan }}</td>
                                 <td>
                                     <a href="{{ url_for('detail_transaksi') }}" class="btn btn-primary rounded-pill">Detail</a>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>2.</td>
-                                <td>20 Februari 2024</td>
-                                <td>
-                                    <button class="btn btn-sm btn-success rounded-3">Selesai</button>
-                                </td>
-                                <td>
-                                    <a href="{{ url_for('detail_transaksi') }}" class="btn btn-primary rounded-pill">Detail</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>3.</td>
-                                <td>28 Februari 2024</td>
-                                <td>
-                                    <button class="btn btn-sm btn-success rounded-3">Selesai</button>
-                                </td>
-                                <td>
-                                    <a href="{{ url_for('detail_transaksi') }}" class="btn btn-primary rounded-pill">Detail</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>4.</td>
-                                <td>1 Maret 2024</td>
-                                <td>
-                                    <button class="btn btn-sm btn-success rounded-3">Selesai</button>
-                                </td>
-                                <td>
-                                    <a href="{{ url_for('detail_transaksi') }}" class="btn btn-primary rounded-pill">Detail</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>5.</td>
-                                <td>20 Maret 2024</td>
-                                <td>
-                                    <button class="btn btn-sm btn-success rounded-3">Selesai</button>
-                                </td>
-                                <td>
-                                    <a href="{{ url_for('detail_transaksi') }}" class="btn btn-primary rounded-pill">Detail</a>
-                                </td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>

@@ -89,7 +89,7 @@ def verifikasisubBag():
             return delete_pengusulan_barang(request.form.get('id'))
 
     # Fetch data from the API
-    api_url = "http://127.0.0.1:1330/sub_bagian/ajukan"
+    api_url = "http://127.0.0.1:1330/api/sub_bagian/ajukan"
     response = requests.get(api_url)
     data = response.json()
 
@@ -118,7 +118,7 @@ def verifikasisubBag():
 
 @app.route("/sub_bag/verif/detail/<item_id>")
 def verifikasiDetailSubBag(item_id):
-    api_url = f"http://127.0.0.1:1330/sub_bagian/ajukan/{item_id}"
+    api_url = f"http://127.0.0.1:1330/api/sub_bagian/ajukan/{item_id}"
     response = requests.get(api_url)
     item_detail = response.json()
 
@@ -142,7 +142,7 @@ def verifikasiverif():
         if request.form.get('_method') == 'DELETE':
             return delete_pengusulan_barang(request.form.get('id'))
 
-    api_url = "http://127.0.0.1:1330/verifikasi/ajukan"
+    api_url = "http://127.0.0.1:1330/api/verifikasi/ajukan"
     response = requests.get(api_url)
     data = response.json()
 
@@ -173,7 +173,7 @@ def verifikasiverif():
 
 @app.route("/verifikasi/verif/detail/<item_id>")
 def verifikasiDetailVerifikasi(item_id):
-    api_url = f"http://127.0.0.1:1330/verifikasi/ajukan/{item_id}"
+    api_url = f"http://127.0.0.1:1330/api/verifikasi/ajukan/{item_id}"
     response = requests.get(api_url)
     item_detail = response.json()
     return render_template(
@@ -198,7 +198,7 @@ def verifikasiKepalaBidang():
             return delete_pengusulan_barang(request.form.get('id'))
 
     # Fetch data from the API
-    api_url = "http://127.0.0.1:1330/kepala_bagian/ajukan"
+    api_url = "http://127.0.0.1:1330/api/kepala_bagian/ajukan"
     response = requests.get(api_url)
     data = response.json()
 
@@ -230,7 +230,7 @@ def verifikasiKepalaBidang():
 
 @app.route("/kepala_bidang/verif/detail/<item_id>")
 def verifikasiDetailkepalaBidang(item_id):
-    api_url = f"http://127.0.0.1:1330/kepala_bagian/ajukan/{item_id}"
+    api_url = f"http://127.0.0.1:1330/api/kepala_bagian/ajukan/{item_id}"
     response = requests.get(api_url)
     item_detail = response.json()
     
@@ -353,41 +353,32 @@ def stock():
 
 @app.route("/staff_ruangan/transaksi")
 def transaksi():
-    data = [
-        {
-            "no": 1,
-            "tanggal": "23 Februari 2024",
-            "status": "Selesai",
-            "ruangan": "Ruangan A",
-        },
-        {
-            "no": 2,
-            "tanggal": "22 Februari 2024",
-            "status": "Proses",
-            "ruangan": "Ruangan B",
-        },
-        {
-            "no": 3,
-            "tanggal": "24 Februari 2024",
-            "status": "Selesai",
-            "ruangan": "Ruangan C",
-        },
-        {
-            "no": 4,
-            "tanggal": "27 Februari 2024",
-            "status": "Selesai",
-            "ruangan": "Ruangan B",
-        },
-        {
-            "no": 5,
-            "tanggal": "25 Februari 2024",
-            "status": "Proses",
-            "ruangan": "Ruangan D",
-        },
-    ]
-    return render_template(
-        "/pages/staff_ruangan/transaksi.html", data=data, menu="transaksi"
-    )
+    api_url = "http://127.0.0.1:1330/api/transaksi"
+    response = requests.get(api_url)
+    data = response.json()
+
+    kepala_bagian_transaksi = data.get('kepala_bagian_transaksi', [])
+    sub_bag_transaksi = data.get('sub_bag_transaksi', [])
+    verifikasi_transaksi = data.get('verifikasi_transaksi', [])
+
+    all_transactions = kepala_bagian_transaksi + sub_bag_transaksi + verifikasi_transaksi
+
+    processed_data = []
+    for i, item in enumerate(all_transactions):
+        processed_data.append({
+            "no": i + 1,
+            "tanggal_pengusulan": item.get("tanggal_pengusulan"),
+            "status": "Selesai" if item.get("is_verif") else "Proses",
+            "ruangan": item.get("ruangan"),
+            "id": item.get("_id"),
+            "nama_barang": item.get("nama_barang"),
+            "jumlah_diterima": item.get("jumlah_diterima"),
+            "merek": item.get("merek"),
+            "tanggal_penerimaan": item.get("tanggal_penerimaan"),
+            "volume": item.get("volume")
+        })
+
+    return render_template("/pages/staff_ruangan/transaksi.html", data=processed_data, menu="transaksi")
 
 
 @app.route("/staff_ruangan/transaksi/detail")
@@ -402,7 +393,7 @@ def pengajuanBarang():
     if request.method == "POST":
         if request.form.get('_method') == 'DELETE':
             return delete_pengajuan_barang(request.form.get('id'))
-    api_url = "http://127.0.0.1:1330/staff_ruangan/pengajuan_barang"
+    api_url = "http://127.0.0.1:1330/api/staff_ruangan/pengajuan_barang"
     response = requests.get(api_url)
     data = response.json()
 
@@ -430,7 +421,7 @@ def sendPengajuanBarang():
         }
 
         
-        api_url = "http://127.0.0.1:1330/staff_ruangan/pengajuan_barang"
+        api_url = "http://127.0.0.1:1330/api/staff_ruangan/pengajuan_barang"
         response = requests.post(api_url, json=data)
         print("JSON data:", json.dumps(data, indent=4))
 
@@ -443,7 +434,7 @@ def sendPengajuanBarang():
     
 @app.route("/staff_ruangan/pengajuan_barang/<string:item_id>", methods=["DELETE"])
 def delete_pengajuan_barang(item_id):
-    api_url = f"http://127.0.0.1:1330/staff_ruangan/pengajuan_barang/{item_id}"
+    api_url = f"http://127.0.0.1:1330/api/staff_ruangan/pengajuan_barang/{item_id}"
     response = requests.delete(api_url)
     if response.status_code == 200:
         return jsonify({"success": True})
@@ -453,7 +444,7 @@ def delete_pengajuan_barang(item_id):
 @app.route("/staff_ruangan/pengajuan_barang/<string:item_id>", methods=["PUT"])
 def update_pengajuan_barang(item_id):
     data = request.get_json()
-    api_url = f"http://127.0.0.1:1330/staff_ruangan/pengajuan_barang/{item_id}"
+    api_url = f"http://127.0.0.1:1330/api/staff_ruangan/pengajuan_barang/{item_id}"
     response = requests.put(api_url, json=data)
     if response.status_code == 200:
         return jsonify({"success": True})
@@ -466,7 +457,7 @@ def pengusulanBarang():
     if request.method == "POST":
         if request.form.get('_method') == 'DELETE':
             return delete_pengajuan_barang(request.form.get('id'))
-    api_url = "http://127.0.0.1:1330/staff_ruangan/pengusulan_barang"
+    api_url = "http://127.0.0.1:1330/api/staff_ruangan/pengusulan_barang"
     response = requests.get(api_url)
     data = response.json()
     print(data)
@@ -498,7 +489,7 @@ def sendPengusulanBarang():
         }
 
         
-        api_url = "http://127.0.0.1:1330/staff_ruangan/pengusulan_barang"
+        api_url = "http://127.0.0.1:1330/api/staff_ruangan/pengusulan_barang"
         response = requests.post(api_url, json=data)
         print("JSON data:", json.dumps(data, indent=4))
 
@@ -511,7 +502,7 @@ def sendPengusulanBarang():
     
 @app.route("/staff_ruangan/pengusulan_barang/<string:item_id>", methods=["DELETE"])
 def delete_pengusulan_barang(item_id):
-    api_url = f"http://127.0.0.1:1330/staff_ruangan/pengusulan_barang/{item_id}"
+    api_url = f"http://127.0.0.1:1330/api/staff_ruangan/pengusulan_barang/{item_id}"
     response = requests.delete(api_url)
     if response.status_code == 200:
         return jsonify({"success": True})
@@ -521,7 +512,7 @@ def delete_pengusulan_barang(item_id):
 @app.route("/staff_ruangan/pengusulan_barang/<string:item_id>", methods=["PUT"])
 def update_pengusulan_barang(item_id):
     data = request.get_json()
-    api_url = f"http://127.0.0.1:1330/staff_ruangan/pengusulan_barang/{item_id}"
+    api_url = f"http://127.0.0.1:1330/api/staff_ruangan/pengusulan_barang/{item_id}"
     response = requests.put(api_url, json=data)
     if response.status_code == 200:
         return jsonify({"success": True})
