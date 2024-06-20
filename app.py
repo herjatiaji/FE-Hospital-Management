@@ -358,23 +358,21 @@ def transaksi():
 
     transactions = []
     # Add the logic to process your JSON data into the transactions list
-    for transaksi in data.get("kepala_bagian_transaksi", []):
+    for transaksi in data.get("pengajuan_barang", []):
         transactions.append({
             "no": transaksi["_id"],
-            "tanggal": transaksi["tanggal_pengusulan"],
-            "status": "Selesai" if transaksi["is_verif"] else "Proses",
+            "tanggal": transaksi["tanggal_pengajuan"],
+            "status": transaksi["status"],
+            "nama_barang": transaksi["nama_barang"],
+            "jumlah": transaksi["jumlah"]
         })
-    for transaksi in data.get("sub_bag_transaksi", []):
+    for transaksi in data.get("pengusulan", []):
         transactions.append({
             "no": transaksi["_id"],
             "tanggal": transaksi["tanggal_pengusulan"],
-            "status": "Selesai" if transaksi["is_verif"] else "Proses",
-        })
-    for transaksi in data.get("verifikasi_transaksi", []):
-        transactions.append({
-            "no": transaksi["_id"],
-            "tanggal": transaksi["tanggal_pengusulan"],
-            "status": "Selesai" if transaksi["is_verif"] else "Proses",
+            "status": transaksi["status"],
+            "nama_barang": transaksi["nama_barang"],
+            "jumlah": transaksi.get("jumlah_diterima", 0)  # Default to 0 if not present
         })
 
     return render_template(
